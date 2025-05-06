@@ -76,5 +76,12 @@ class TestOverlapAnalysis(unittest.TestCase):
         out = pd.read_csv(out_path)
         self.assertIn("kmeans_label", out.columns)
 
+    def test_load_embeddings_returns_dataframe(self):
+        df = load_embeddings()
+        self.assertIsInstance(df, pd.DataFrame)
+        self.assertTrue("img_name" in df.columns)
+        self.assertTrue("class" in df.columns)
+
+
 if __name__ == "__main__":
     unittest.main()
