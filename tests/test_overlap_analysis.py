@@ -35,7 +35,7 @@ def generate_dummy_test_files():
     })
     df.to_csv("tests/test_midpoints.csv", index=False)
 
-generate_dummy_test_files()  # ✅ Ensure test files always exist
+generate_dummy_test_files() 
 
 class TestOverlapAnalysis(unittest.TestCase):
 
@@ -71,7 +71,7 @@ class TestOverlapAnalysis(unittest.TestCase):
             "class": ["A"] * 10
         })
         cluster_all_embeddings(dummy_data, n_clusters=2)
-        out_path = "/home/nmichelotti/Desktop/CS 333 Final Project/src/results/KMeans_All.csv"
+        out_path = os.path.join(os.path.dirname(__file__), "../src/results/KMeans_All.csv")
         self.assertTrue(os.path.exists(out_path))
         out = pd.read_csv(out_path)
         self.assertIn("kmeans_label", out.columns)
