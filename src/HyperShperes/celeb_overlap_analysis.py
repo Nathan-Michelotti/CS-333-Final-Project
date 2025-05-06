@@ -8,7 +8,8 @@ from sklearn.cluster import KMeans
 from tqdm import tqdm
 
 # Paths
-RESULTS_PATH = "/home/nmichelotti/Desktop/CS 333 Final Project/src/results"
+RESULTS_PATH = os.path.join(os.path.dirname(__file__), "../results")
+os.makedirs(RESULTS_PATH, exist_ok=True)
 GRAPH_PATH = os.path.join(RESULTS_PATH, "graphs")
 os.makedirs(RESULTS_PATH, exist_ok=True)
 os.makedirs(GRAPH_PATH, exist_ok=True)
