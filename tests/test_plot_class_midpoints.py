@@ -19,7 +19,7 @@ class TestPlotClassMidpoints(unittest.TestCase):
         self.test_dir = "tests/test_results"
         os.makedirs(self.test_dir, exist_ok=True)
 
-        # Create dummy midpoint data
+        # Auto-generate midpoint CSV
         midpoint = ",".join(map(str, np.random.rand(512)))
         self.df = pd.DataFrame({
             "class": ["A", "B"],

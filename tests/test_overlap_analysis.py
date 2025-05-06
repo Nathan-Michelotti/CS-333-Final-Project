@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import torch
 
-# ✅ Fix module path for local testing
+# Fix import path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../src/HyperShperes")))
 
 from celeb_overlap_analysis import (
@@ -15,7 +15,7 @@ from celeb_overlap_analysis import (
     cluster_all_embeddings,
 )
 
-# ---------- Setup Dummy Files ----------
+# Auto-generate required test files
 def generate_dummy_test_files():
     os.makedirs("tests", exist_ok=True)
 
@@ -23,9 +23,7 @@ def generate_dummy_test_files():
     torch.save(dummy_embeddings, "tests/test_embeddings.pth")
 
     with open("tests/test_image_paths.txt", "w") as f:
-        f.writelines([
-            "A+1.png\n", "A+2.png\n", "B+1.png\n", "C+1.png\n", "C+2.png\n"
-        ])
+        f.writelines(["A+1.png\n", "A+2.png\n", "B+1.png\n", "C+1.png\n", "C+2.png\n"])
 
     df = pd.DataFrame({
         "class": ["A", "B"],
@@ -37,7 +35,8 @@ def generate_dummy_test_files():
     })
     df.to_csv("tests/test_midpoints.csv", index=False)
 
-# ---------- Unit Tests ----------
+generate_dummy_test_files()  # ✅ Ensure test files always exist
+
 class TestOverlapAnalysis(unittest.TestCase):
 
     def test_find_midpoints_output(self):
@@ -52,7 +51,6 @@ class TestOverlapAnalysis(unittest.TestCase):
         self.assertEqual(len(result), 2)
 
     def test_load_embeddings_basic(self):
-        # Uses dummy embeddings + image names
         embeddings = pd.DataFrame(torch.load("tests/test_embeddings.pth"))
         with open("tests/test_image_paths.txt", "r") as f:
             names = [line.strip() for line in f]
@@ -78,7 +76,5 @@ class TestOverlapAnalysis(unittest.TestCase):
         out = pd.read_csv(out_path)
         self.assertIn("kmeans_label", out.columns)
 
-# ---------- Run ----------
 if __name__ == "__main__":
-    generate_dummy_test_files()
     unittest.main()
