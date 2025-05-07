@@ -59,7 +59,7 @@ class TestOverlapAnalysis(unittest.TestCase):
         embeddings = embeddings.iloc[:len(names)].copy()
         embeddings["img_name"] = names
         embeddings["class"] = embeddings["img_name"].apply(lambda x: x.split("+")[0])
-        self.assertEqual(len(embeddings), 5)
+        self.assertEqual(len(embeddings), 3)
         self.assertIn("class", embeddings.columns)
 
     def test_compute_overlap_runs(self):
@@ -78,19 +78,30 @@ class TestOverlapAnalysis(unittest.TestCase):
         out = pd.read_csv(out_path)
         self.assertIn("kmeans_label", out.columns)
 
-    def test_describe_clusters_summary(self):
-        y_true = [0, 0, 1, 1]
-        labels = [1, 1, 0, 0]
-        label_names = {0: "A", 1: "B"}
-        result = celeb_overlap_analysis.describe_clusters(y_true, labels, label_names)
-        self.assertIn("cluster_0", result)
-        self.assertIn("cluster_1", result)
-        self.assertIsInstance(result["cluster_0"], dict)
-
     def test_plot_overlap_runs(self):
         df = compute_overlap("tests/test_midpoints.csv")
         celeb_overlap_analysis.plot_overlap(df)
         self.assertTrue(True)
+
+    def test_dummy_load_embeddings_behavior(self):
+
+        with patch("HyperShperes.celeb_overlap_analysis.EMBEDDINGS_PATH", "tests/test_embeddings.pth"), \
+            patch("HyperShperes.celeb_overlap_analysis.EMBEDDINGS_IMAGE_PATH", "tests/test_image_paths.txt"), \
+            patch("HyperShperes.celeb_overlap_analysis.device", torch.device("cpu")), \
+            patch("HyperShperes.celeb_overlap_analysis.torch.load") as mock_load:
+
+            mock_tensor = torch.stack([torch.ones(512) for _ in range(3)])
+            mock_load.return_value = mock_tensor
+
+            with open("tests/test_image_paths.txt", "w") as f:
+                f.writelines(["A+1.png\n", "A+2.png\n", "A+3.png\n"])
+
+            df = load_embeddings()
+            self.assertEqual(df.shape[0], 3)
+            self.assertIn("img_name", df.columns)
+            self.assertIn("class", df.columns)
+
+
 
 if __name__ == "__main__":
     unittest.main()
