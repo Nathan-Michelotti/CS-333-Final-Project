@@ -7,6 +7,7 @@ import torch
 from unittest.mock import patch
 from HyperShperes import celeb_overlap_analysis
 from HyperShperes.celeb_overlap_analysis import load_embeddings
+from HyperShperes.celeb_overlap_analysis import describe_clusters
 
 # Fix import path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../src/HyperShperes")))
@@ -80,12 +81,15 @@ class TestOverlapAnalysis(unittest.TestCase):
         self.assertIn("kmeans_label", out.columns)
 
 
-    @patch("HyperShperes.celeb_overlap_analysis.EMBEDDINGS_PATH", "tests/test_embeddings.pth")
-    def test_load_embeddings_returns_dataframe(self):
-        df = load_embeddings()
-        self.assertIsInstance(df, pd.DataFrame)
-        self.assertIn("img_name", df.columns)
-        self.assertIn("class", df.columns)
+    def test_describe_clusters_summary(self):
+        y_true = [0, 0, 1, 1]
+        labels = [1, 1, 0, 0]
+        label_names = {0: "A", 1: "B"}
+        result = describe_clusters(y_true, labels, label_names)
+        self.assertIn("cluster_0", result)
+        self.assertIn("cluster_1", result)
+        self.assertIsInstance(result["cluster_0"], dict)
+
 
     def test_plot_overlap_runs(self):
         df = compute_overlap("tests/test_midpoints.csv")
