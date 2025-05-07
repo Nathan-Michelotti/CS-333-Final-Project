@@ -5,21 +5,19 @@ import pandas as pd
 import numpy as np
 import torch
 from unittest.mock import patch
+
+# Ensure correct module path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
+
 from HyperShperes import celeb_overlap_analysis
-from HyperShperes.celeb_overlap_analysis import load_embeddings
-from HyperShperes.celeb_overlap_analysis import describe_clusters
-
-# Fix import path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../src/HyperShperes")))
-
-from celeb_overlap_analysis import (
+from HyperShperes.celeb_overlap_analysis import (
     find_midpoints,
     load_embeddings,
     compute_overlap,
     cluster_all_embeddings,
 )
 
-# Auto-generate required test files
+# Generate dummy files for testing
 def generate_dummy_test_files():
     os.makedirs("tests", exist_ok=True)
 
@@ -39,7 +37,7 @@ def generate_dummy_test_files():
     })
     df.to_csv("tests/test_midpoints.csv", index=False)
 
-generate_dummy_test_files() 
+generate_dummy_test_files()
 
 class TestOverlapAnalysis(unittest.TestCase):
 
@@ -75,27 +73,24 @@ class TestOverlapAnalysis(unittest.TestCase):
             "class": ["A"] * 10
         })
         cluster_all_embeddings(dummy_data, n_clusters=2)
-        out_path = os.path.join(os.path.dirname(__file__), "../src/results/KMeans_All.csv")
+        out_path = os.path.join("src", "results", "KMeans_All.csv")
         self.assertTrue(os.path.exists(out_path))
         out = pd.read_csv(out_path)
         self.assertIn("kmeans_label", out.columns)
-
 
     def test_describe_clusters_summary(self):
         y_true = [0, 0, 1, 1]
         labels = [1, 1, 0, 0]
         label_names = {0: "A", 1: "B"}
-        result = describe_clusters(y_true, labels, label_names)
+        result = celeb_overlap_analysis.describe_clusters(y_true, labels, label_names)
         self.assertIn("cluster_0", result)
         self.assertIn("cluster_1", result)
         self.assertIsInstance(result["cluster_0"], dict)
 
-
     def test_plot_overlap_runs(self):
         df = compute_overlap("tests/test_midpoints.csv")
         celeb_overlap_analysis.plot_overlap(df)
-        self.assertTrue(True) 
-
+        self.assertTrue(True)
 
 if __name__ == "__main__":
     unittest.main()
