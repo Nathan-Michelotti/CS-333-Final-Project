@@ -4,7 +4,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 
-# Use relative path
 RESULTS_PATH = os.path.join(os.path.dirname(__file__), "../results")
 os.makedirs(RESULTS_PATH, exist_ok=True)
 
@@ -36,8 +35,13 @@ def plot_class_midpoints_pca(df, output_path=RESULTS_PATH):
     plt.close()
 
 if __name__ == "__main__":
-    example_csv = os.path.join(os.path.dirname(__file__), "../../tests/test_midpoints.csv")
-    if os.path.exists(example_csv):
-        df = pd.read_csv(example_csv)
-        plot_class_radii_histogram(df)
-        plot_class_midpoints_pca(df)
+    # Generate 20 synthetic midpoints with noise for meaningful visualization
+    midpoints = []
+    for i in range(20):
+        midpoint = ",".join(map(str, np.random.normal(loc=i * 0.5, scale=1.0, size=512)))
+        max_distance = np.random.uniform(0.8, 1.5)
+        midpoints.append({"class": f"Class_{i}", "midpoint": midpoint, "max_distance": max_distance})
+
+    df = pd.DataFrame(midpoints)
+    plot_class_radii_histogram(df)
+    plot_class_midpoints_pca(df)

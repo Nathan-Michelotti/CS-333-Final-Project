@@ -92,6 +92,7 @@ def cluster_all_embeddings(embeddings, n_clusters=10):
     embeddings["kmeans_label"] = labels
     embeddings[["img_name", "class", "kmeans_label"]].to_csv(os.path.join(RESULTS_PATH, "KMeans_All.csv"), index=False)
 
+
 def main():
     embeddings = load_embeddings()
     mid_df = find_midpoints(embeddings)
