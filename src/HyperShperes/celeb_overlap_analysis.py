@@ -73,6 +73,9 @@ def compute_overlap(midpoint_csv):
 
 
 def plot_overlap(overlap_df):
+    if overlap_df.empty or "class_1" not in overlap_df.columns:
+        print("No overlap data to plot.")
+        return
     for cls in tqdm(overlap_df["class_1"].unique(), desc="Plotting Overlap Graphs"):
         subset = overlap_df[overlap_df["class_1"] == cls]
         if subset.empty:
